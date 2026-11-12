@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trò Chơi Cho TUẤTs 9C</title>
+    <style>
+        /* ==========================================================================
+           1. BIẾN MÀU SẮC & THIẾT LẬP CHUNG (TỐI ƯU CHO MÁY CHIẾU)
+           ========================================================================== */
+        :root {
+            --bg-gradient-1: #0f172a;
+            --bg-gradient-2: #1e293b;
+            --card-bg: rgba(30, 41, 59, 0.85);
+            --card-border: rgba(148, 163, 184, 0.2);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #38bdf8;
+            --primary-hover: #0284c7;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --key-bg: #334155;
+            --key-hover: #475569;
+            --key-shadow: #0f172a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at top right, var(--bg-gradient-2), var(--bg-gradient-1));
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* ==========================================================================
+           2. THANH CÔNG CỤ TRÊN CÙNG (HEADER)
+           ========================================================================== */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 32px;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: var(--key-bg);
+            color: var(--text-main);
+            border: 1px solid var(--card-border);
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .icon-btn:hover {
+            background: var(--key-hover);
+            transform: translateY(-2px);
+        }
+
+        .icon-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ==========================================================================
+           3. KHU VỰC NỘI DUNG CHÍNH
+           ========================================================================== */
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            width: 100%;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ==========================================================================
+           4. MÀN HÌNH THIẾT LẬP (DÀNH CHO NGƯỜI TỔ CHỨC)
+           ========================================================================== */
+        .setup-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 580px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .setup-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        .setup-card p.subtitle {
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 28px;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+            color: #e2e8f0;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 2px solid var(--card-border);
+            background: rgba(15, 23, 42, 0.8);
+            color: var(--text-main);
+            font-size: 1.15rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .toggle-secret-btn {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 6px;
+        }
+
+        .toggle-secret-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .helper-note {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .error-msg {
+            color: var(--danger);
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-align: center;
+            min-height: 22px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary), #2563eb);
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            box-shadow: 0 10px 20px -5px rgba(56, 189, 248, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        /* ==========================================================================
+           5. MÀN HÌNH HƯỚNG DẪN CÁCH CHƠI (HOW TO PLAY MODAL)
+           ========================================================================== */
+        .guide-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(9, 13, 24, 0.88);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            padding: 20px;
+            opacity: 1;
+            transition: opacity 0.35s ease;
+            animation: fadeIn 0.35s ease;
+        }
+
+        .guide-modal-overlay.closing {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .guide-card {
+            background: linear-gradient(160deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
+            border: 2px solid rgba(56, 189, 248, 0.4);
+            border-radius: 28px;
+            padding: clamp(24px, 4vw, 40px);
+            max-width: 680px;
+            width: 100%;
+            box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.8), 0 0 40px rgba(56, 189, 248, 0.15);
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.35s ease;
+        }
+
+        .guide-modal-overlay.closing .guide-card {
+            transform: scale(0.94);
+        }
+
+        .guide-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .guide-badge {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            padding: 5px 14px;
+            border-radius: 999px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .guide-title {
+            font-size: clamp(1.7rem, 3vw, 2.3rem);
+            font-weight: 900;
+            color: var(--text-main);
+            letter-spacing: 0.8px;
+        }
+
+        .guide-steps {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .guide-step-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid var(--card-border);
+            padding: 14px 18px;
+            border-radius: 16px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .guide-step-item:hover {
+            border-color: rgba(56, 189, 248, 0.4);
+            transform: translateX(4px);
+        }
+
+        .step-num {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), #2563eb);
+            color: white;
+            font-weight: 800;
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(56, 189, 248, 0.3);
+        }
+
+        .step-text {
+            font-size: clamp(1rem, 1.4vw, 1.15rem);
+            line-height: 1.45;
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        .step-text strong {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .btn-lets-play {
+            width: 100%;
+            padding: 18px 24px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            font-size: clamp(1.2rem, 2vw, 1.45rem);
+            font-weight: 800;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 12px 25px -5px rgba(34, 197, 94, 0.45);
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-lets-play:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.08);
+        }
+
+        .btn-lets-play:active {
+            transform: translateY(0);
+        }
+
+        /* ==========================================================================
+           6. MÀN HÌNH CHƠI CHÍNH (GAMEPLAY)
+           ========================================================================== */
+        .game-container {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 32px;
+            width: 100%;
+            align-items: stretch;
+            animation: fadeIn 0.4s ease;
+        }
+
+        /* Cột trái: Khu vực nhân vật & Mạng sống */
+        .character-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .lives-badge {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 12px 18px;
+            border-radius: 14px;
+            border: 1px solid var(--card-border);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .hearts-container {
+            display: flex;
+            gap: 6px;
+            font-size: 1.3rem;
+        }
+
+        .heart {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .heart.lost {
+            opacity: 0.2;
+            filter: grayscale(100%);
+            transform: scale(0.85);
+        }
+
+        .stage-frame {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            max-height: 360px;
+            margin: 20px 0;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 18px;
+            border: 2px dashed rgba(148, 163, 184, 0.25);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stage-frame svg {
+            width: 100%;
+            height: 100%;
+            max-width: 300px;
+            max-height: 300px;
+        }
+
+        .head-pop-anim {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* ==========================================================================
+           HIỆU ỨNG GAME OVER TUẦN TỰ (ZOOM TÂM ĐIỂM -> RƠI ĐẦU CONG)
+           ========================================================================== */
+        .spotlight-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(9, 13, 24, 0.86);
+            backdrop-filter: blur(6px);
+            z-index: 80;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+        }
+
+        .spotlight-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .stage-frame.gameover-spotlight {
+            z-index: 90;
+            background: #0f172a;
+            border: 3px solid var(--danger);
+            border-style: solid;
+            box-shadow: 0 0 60px rgba(239, 68, 68, 0.45), 0 25px 50px rgba(0, 0, 0, 0.85);
+            transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.9s ease, border-color 0.5s ease;
+        }
+
+        .stage-frame.gameover-tremble {
+            animation: tenseTremble 0.14s infinite linear;
+        }
+
+        /* Quỹ đạo cong hoạt hình tách đầu khỏi thân và rơi xuống */
+        #hangman-head-group.head-detach-fall {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: headCurveFall 1.15s cubic-bezier(0.32, 0.04, 0.68, 0.95) forwards;
+        }
+
+        @keyframes tenseTremble {
+            0% { margin-left: 0px; margin-top: 20px; }
+            25% { margin-left: -4px; margin-top: 18px; }
+            50% { margin-left: 4px; margin-top: 22px; }
+            75% { margin-left: -3px; margin-top: 21px; }
+            100% { margin-left: 3px; margin-top: 19px; }
+        }
+
+        @keyframes headCurveFall {
+            0% {
+                transform: translate(0px, 0px) rotate(0deg);
+            }
+            18% {
+                transform: translate(12px, -8px) rotate(18deg);
+            }
+            45% {
+                transform: translate(28px, 34px) rotate(72deg);
+            }
+            75% {
+                transform: translate(38px, 95px) rotate(135deg);
+            }
+            90% {
+                transform: translate(42px, 128px) rotate(162deg);
+            }
+            95% {
+                transform: translate(44px, 121px) rotate(170deg);
+            }
+            100% {
+                transform: translate(45px, 128px) rotate(176deg);
+            }
+        }
+
+        .mistake-counter {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .mistake-counter span {
+            color: var(--warning);
+            font-weight: 800;
+            font-size: 1.3rem;
+        }
+
+        /* Cột phải: Gợi ý, Ô chữ bí mật & Bàn phím */
+        .play-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 28px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Hộp gợi ý */
+        .hint-box {
+            background: rgba(56, 189, 248, 0.12);
+            border-left: 5px solid var(--primary);
+            padding: 16px 24px;
+            border-radius: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .hint-tag {
+            background: var(--primary);
+            color: #0f172a;
+            font-weight: 800;
+            font-size: 0.9rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            margin-top: 2px;
+        }
+
+        .hint-text {
+            font-size: clamp(1.15rem, 1.8vw, 1.55rem);
+            font-weight: 600;
+            line-height: 1.4;
+            color: #f1f5f9;
+        }
+
+        /* Khu vực hiển thị các ô chữ từ khóa */
+        .word-display {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 28px;
+            min-height: 110px;
+            padding: 16px 0;
+        }
+
+        .word-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .letter-slot {
+            width: clamp(44px, 4.5vw, 66px);
+            height: clamp(56px, 5.5vw, 80px);
+            background: rgba(15, 23, 42, 0.85);
+            border-bottom: 5px solid var(--primary);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: clamp(1.8rem, 3vw, 2.8rem);
+            font-weight: 800;
+            color: var(--text-main);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.25s ease;
+        }
+
+        .letter-slot.revealed {
+            background: rgba(34, 197, 94, 0.15);
+            border-bottom-color: var(--success);
+            color: #4ade80;
+            animation: popIn 0.3s ease;
+        }
+
+        .letter-slot.missed-reveal {
+            background: rgba(239, 68, 68, 0.2);
+            border-bottom-color: var(--danger);
+            color: #f87171;
+        }
+
+        .letter-slot.punctuation {
+            background: transparent;
+            border-bottom: none;
+            box-shadow: none;
+            width: auto;
+            padding: 0 4px;
+            color: var(--text-muted);
+        }
+
+        /* Bàn phím ảo A-Z */
+        .keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .key-btn {
+            flex: 1;
+            max-width: 68px;
+            height: clamp(48px, 5vw, 64px);
+            background: var(--key-bg);
+            color: var(--text-main);
+            border: none;
+            border-radius: 12px;
+            font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 0 var(--key-shadow);
+            transition: all 0.15s ease;
+        }
+
+        .key-btn:hover:not(:disabled) {
+            background: var(--key-hover);
+            transform: translateY(-2px);
+        }
+
+        .key-btn:active:not(:disabled) {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 var(--key-shadow);
+        }
+
+        .key-btn:disabled {
+            cursor: not-allowed;
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        .key-btn.correct {
+            background: var(--success);
+            color: #052e16;
+            opacity: 0.9;
+        }
+
+        .key-btn.wrong {
+            background: rgba(239, 68, 68, 0.25);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            opacity: 0.55;
+        }
+
+        /* Thanh nút điều khiển nhanh dưới bàn phím */
+        .game-footer-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding-top: 8px;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.15);
+            color: var(--text-main);
+            border: 1px solid var(--card-border);
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(148, 163, 184, 0.28);
+        }
+
+        /* ==========================================================================
+           7. MODAL THÔNG BÁO THẮNG / THUA
+           ========================================================================== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.82);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 120;
+            padding: 20px;
+            animation: fadeIn 0.45s ease;
+        }
+
+        .modal-card {
+            background: #1e293b;
+            border: 2px solid var(--card-border);
+            border-radius: 28px;
+            padding: 40px;
+            max-width: 520px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            animation: popIn 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-icon {
+            font-size: 4.5rem;
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+
+        .modal-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+        }
+
+        .modal-title.win {
+            color: var(--success);
+        }
+
+        .modal-title.lose {
+            color: var(--danger);
+            text-shadow: 0 0 24px rgba(239, 68, 68, 0.5);
+        }
+
+        .modal-desc {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .answer-reveal-box {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--card-border);
+            padding: 16px;
+            border-radius: 14px;
+            margin-bottom: 28px;
+        }
+
+        .answer-reveal-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .answer-reveal-word {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 3px;
+        }
+
+        .modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .modal-btn {
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.15s, filter 0.15s;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        .modal-btn.replay {
+            background: var(--key-bg);
+            color: var(--text-main);
+            border: 1px solid var(--card-border);
+        }
+
+        .modal-btn.new-word {
+            background: linear-gradient(135deg, var(--primary), #2563eb);
+            color: white;
+        }
+
+        /* ==========================================================================
+           8. HIỆU ỨNG CHUYỂN ĐỘNG & RESPONSIVE
+           ========================================================================== */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.75); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        .shake-anim {
+            animation: shake 0.4s ease;
+        }
+
+        @media (max-width: 980px) {
+            .game-container {
+                grid-template-columns: 1fr;
+            }
+            .character-panel {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-around;
+                gap: 16px;
+            }
+            .stage-frame {
+                width: 220px;
+                height: 220px;
+                margin: 0;
+            }
+            .lives-badge {
+                width: auto;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 12px 16px;
+            }
+            .play-panel {
+                padding: 20px 14px;
+            }
+            .keyboard-row {
+                gap: 4px;
+            }
+            .key-btn {
+                border-radius: 8px;
+                height: 44px;
+            }
+            .modal-actions {
+                grid-template-columns: 1fr;
+            }
+            .guide-step-item {
+                padding: 10px 12px;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ======================================================================
+         THANH TIÊU ĐỀ & NÚT TIỆN ÍCH (ÂM THANH / TOÀN MÀN HÌNH)
+         ====================================================================== -->
+    <header>
+        <div class="logo">
+            <span>🎯</span>
+            <span>Cứu cháu bé Thái mất dạy</span>
+        </div>
+        <div class="header-controls">
+            <button id="btn-sound" class="icon-btn" title="Bật hoặc tắt hiệu ứng âm thanh">
+                <span id="sound-icon">🔊</span>
+                <span id="sound-label">Âm thanh: Bật</span>
+            </button>
+            <button id="btn-fullscreen" class="icon-btn" title="Chuyển đổi chế độ toàn màn hình">
+                <span>⛶</span>
+                <span id="fullscreen-label">Toàn màn hình</span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- ==================================================================
+             MÀN HÌNH 1: THIẾT LẬP TỪ KHÓA (ẨN HOÀN TOÀN KHI BẮT ĐẦU CHƠI)
+             ================================================================== -->
+        <section id="setup-screen" class="setup-card">
+            <h2>Đợi tao chọn từ!</h2>
+            <p class="subtitle">!!!MẤY TUẤT CÓ NÃO THÌ ĐOÁN HỘ!!!</p>
+
+            <form id="setup-form" autocomplete="off">
+                <div class="form-group">
+                    <label for="input-keyword">Từ khóa bí mật (Chữ cái A-Z)</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="password" 
+                            id="input-keyword" 
+                            placeholder="Nhập từ khóa bí mật..." 
+                            maxlength="40"
+                            required
+                        >
+                        <button type="button" id="btn-toggle-secret" class="toggle-secret-btn">Hiện</button>
+                    </div>
+                    <p class="helper-note">* Tự động chuẩn hóa chữ hoa và bỏ dấu tiếng Việt nếu có (VD: "HÀ NỘI" → "HA NOI").</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="input-hint">Gợi ý hiển thị cho người chơi</label>
+                    <textarea 
+                        id="input-hint" 
+                        rows="2" 
+                        placeholder="Ví dụ: Thủ đô ngàn năm văn hiến của Việt Nam..."
+                        maxlength="180"
+                        required
+                    ></textarea>
+                </div>
+
+                <div id="setup-error" class="error-msg"></div>
+
+                <button type="submit" class="btn-primary">BẮT ĐẦU TRÒ CHƠI 🚀</button>
+            </form>
+        </section>
+
+        <!-- ==================================================================
+             MÀN HÌNH 2: GIAO DIỆN TRÒ CHƠI CHÍNH
+             ================================================================== -->
+        <section id="game-screen" class="game-container hidden">
+            <!-- Cột trái: Trạng thái nhân vật -->
+            <div class="character-panel">
+                <div class="lives-badge">
+                    <span>Lượt còn lại:</span>
+                    <div id="hearts-display" class="hearts-container"></div>
+                </div>
+
+                <div id="stage-frame" class="stage-frame">
+                    <!-- Nhân vật Hangman và ảnh khuôn mặt được render tại đây -->
+                </div>
+
+                <div class="mistake-counter">
+                    Số lượt sai: <span id="mistake-count">0</span> / 6
+                </div>
+            </div>
+
+            <!-- Cột phải: Gợi ý, Ô chữ bí mật & Bàn phím -->
+            <div class="play-panel">
+                <div class="hint-box">
+                    <span class="hint-tag">Gợi ý</span>
+                    <div id="display-hint" class="hint-text"></div>
+                </div>
+
+                <div id="word-display" class="word-display">
+                    <!-- Các ô chữ cái được sinh tự động bằng JS -->
+                </div>
+
+                <div id="keyboard" class="keyboard">
+                    <!-- Bàn phím A-Z được sinh tự động bằng JS -->
+                </div>
+
+                <div class="game-footer-actions">
+                    <button type="button" id="btn-replay-inline" class="btn-secondary">🔄 Chơi lại từ này</button>
+                    <button type="button" id="btn-newword-inline" class="btn-secondary">➕ Từ khóa mới</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ======================================================================
+         MODAL HƯỚNG DẪN CÁCH CHƠI (HIỂN THỊ TRƯỚC KHI VÒNG CHƠI BẮT ĐẦU)
+         ====================================================================== -->
+    <div id="guide-modal" class="guide-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="guide-modal-title">
+        <div class="guide-card">
+            <div class="guide-header">
+                <span class="guide-badge">Caution for SONS of B*tch!!!</span>
+                <h2 id="guide-modal-title" class="guide-title">LƯU Ý CHO MẤY TUẤT</h2>
+            </div>
+
+            <ol class="guide-steps">
+                <li class="guide-step-item">
+                    <span class="step-num">1</span>
+                    <span class="step-text">Sử dụng cái <strong><i>NÃO CHÓ</i></strong> của bay để đoán từ của tao.</span>
+                </li>
+                <li class="guide-step-item">
+                    <span class="step-num">2</span>
+                    <span class="step-text">Từ mà bay đoán là từ <strong>Tiếng VIỆT KHÔNG DẤU</strong> OK ????</span>
+                </li>
+            </ol>
+
+            <button type="button" id="btn-start-play" class="btn-lets-play">
+                <span>CHAN BỐ MÀY ĐI</span>
+                <span>▶</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Lớp nền tối tập trung khi nhân vật Zoom In lúc Game Over -->
+    <div id="spotlight-backdrop" class="spotlight-backdrop"></div>
+
+    <!-- ======================================================================
+         MODAL THÔNG BÁO KẾT QUẢ THẮNG / THUA
+         ====================================================================== -->
+    <div id="result-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div id="modal-icon" class="modal-icon">🎉</div>
+            <h2 id="modal-title" class="modal-title win">TỐT!</h2>
+            <p id="modal-desc" class="modal-desc">Coi như mi biết dùng não.</p>
+
+            <div class="answer-reveal-box">
+                <div class="answer-reveal-label">Đáp án này mấy Tuất.</div>
+                <div id="modal-answer" class="answer-reveal-word"></div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" id="btn-modal-replay" class="modal-btn replay">🔄 CHƠI LẠI</button>
+                <button type="button" id="btn-modal-newword" class="modal-btn new-word">➕ TỪ KHÓA MỚI</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ẢNH KHUÔN MẶT NHÂN VẬT
+        // Thay giá trị bên dưới bằng đường dẫn ảnh (VD: "./face.png") hoặc chuỗi Base64 (VD: "data:image/png;base64,...")
+        // Ưu tiên ảnh PNG nền trong suốt. Ảnh sẽ xuất hiện ở lần đoán sai thứ 1 và giữ nguyên tới hết ván.
+        const HEAD_IMAGE = "https://i.postimg.cc/pTHksyqd/image.png";
+
+        /**
+         * ============================================================================
+         * KHỞI TẠO BIẾN TRẠNG THÁI TRÒ CHƠI
+         * ============================================================================
+         */
+        const MAX_MISTAKES = 6;
+        const KEYBOARD_ROWS = [
+            ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+            ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+            ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
+        ];
+
+        // Trạng thái nội bộ (Không bao giờ lưu cứng từ khóa trong code)
+        const gameState = {
+            secretWord: '',      // Từ khóa đã chuẩn hóa (A-Z và khoảng trắng/ký tự ngắt)
+            hint: '',            // Gợi ý hiện tại
+            guessedLetters: new Set(),
+            mistakes: 0,
+            status: 'SETUP',     // 'SETUP' | 'GUIDE' | 'PLAYING' | 'WON' | 'LOST'
+            soundEnabled: true,
+            headImageError: false,
+            gameOverSequenceActive: false,
+            gameOverTimers: []
+        };
+
+        // Tham chiếu các phần tử DOM
+        const dom = {
+            setupScreen: document.getElementById('setup-screen'),
+            gameScreen: document.getElementById('game-screen'),
+            setupForm: document.getElementById('setup-form'),
+            inputKeyword: document.getElementById('input-keyword'),
+            inputHint: document.getElementById('input-hint'),
+            btnToggleSecret: document.getElementById('btn-toggle-secret'),
+            setupError: document.getElementById('setup-error'),
+
+            guideModal: document.getElementById('guide-modal'),
+            btnStartPlay: document.getElementById('btn-start-play'),
+
+            heartsDisplay: document.getElementById('hearts-display'),
+            stageFrame: document.getElementById('stage-frame'),
+            spotlightBackdrop: document.getElementById('spotlight-backdrop'),
+            mistakeCount: document.getElementById('mistake-count'),
+            displayHint: document.getElementById('display-hint'),
+            wordDisplay: document.getElementById('word-display'),
+            keyboard: document.getElementById('keyboard'),
+
+            btnSound: document.getElementById('btn-sound'),
+            soundIcon: document.getElementById('sound-icon'),
+            soundLabel: document.getElementById('sound-label'),
+            btnFullscreen: document.getElementById('btn-fullscreen'),
+            fullscreenLabel: document.getElementById('fullscreen-label'),
+
+            btnReplayInline: document.getElementById('btn-replay-inline'),
+            btnNewWordInline: document.getElementById('btn-newword-inline'),
+
+            resultModal: document.getElementById('result-modal'),
+            modalIcon: document.getElementById('modal-icon'),
+            modalTitle: document.getElementById('modal-title'),
+            modalDesc: document.getElementById('modal-desc'),
+            modalAnswer: document.getElementById('modal-answer'),
+            btnModalReplay: document.getElementById('btn-modal-replay'),
+            btnModalNewWord: document.getElementById('btn-modal-newword')
+        };
+
+        /**
+         * ============================================================================
+         * HỆ THỐNG ÂM THANH TỔNG HỢP (WEB AUDIO API - KHÔNG CẦN FILE NGOÀI)
+         * ============================================================================
+         */
+        const SoundFX = (() => {
+            let audioCtx = null;
+
+            function getContext() {
+                if (!audioCtx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) audioCtx = new AudioContext();
+                }
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                return audioCtx;
+            }
+
+            function playTone(freq, type, duration, startTimeOffset = 0, gainVal = 0.15) {
+                if (!gameState.soundEnabled) return;
+                const ctx = getContext();
+                if (!ctx) return;
+
+                const now = ctx.currentTime + startTimeOffset;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, now);
+
+                gain.gain.setValueAtTime(gainVal, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + duration);
+            }
+
+            return {
+                correct() {
+                    playTone(523.25, 'sine', 0.15, 0, 0.18);      // C5
+                    playTone(659.25, 'sine', 0.25, 0.08, 0.18);   // E5
+                },
+                wrong() {
+                    playTone(220, 'sawtooth', 0.18, 0, 0.14);     // A3
+                    playTone(174.61, 'sawtooth', 0.28, 0.1, 0.14);// F3
+                },
+                win() {
+                    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5 - E5 - G5 - C6
+                    notes.forEach((n, idx) => playTone(n, 'triangle', 0.3, idx * 0.11, 0.2));
+                },
+                lose() {
+                    const notes = [392.00, 369.99, 349.23, 329.63]; // G4 - F#4 - F4 - E4
+                    notes.forEach((n, idx) => playTone(n, 'sawtooth', 0.35, idx * 0.16, 0.14));
+                },
+                headDrop() {
+                    playTone(440, 'triangle', 0.18, 0, 0.16);
+                    playTone(310, 'triangle', 0.22, 0.16, 0.16);
+                    playTone(195, 'sine', 0.28, 0.34, 0.18);
+                },
+                click() {
+                    playTone(800, 'sine', 0.05, 0, 0.06);
+                }
+            };
+        })();
+
+        /**
+         * ============================================================================
+         * CHUẨN HÓA DỮ LIỆU & HIỂN THỊ NHÂN VẬT HANGMAN
+         * ============================================================================
+         */
+        function normalizeKeyword(rawText) {
+            return rawText
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/đ/g, 'd')
+                .replace(/Đ/g, 'D')
+                .toUpperCase()
+                .replace(/[^A-Z\s-]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function hasValidHeadImage() {
+            if (gameState.headImageError) return false;
+            if (typeof HEAD_IMAGE !== 'string') return false;
+            const trimmed = HEAD_IMAGE.trim();
+            return trimmed !== '' && trimmed !== 'YOUR_IMAGE_BASE64_OR_PATH';
+        }
+
+        function renderHangmanSVG(step, animateHead = false) {
+            const useCustomHead = hasValidHeadImage();
+            const headAnimClass = animateHead ? 'head-pop-anim' : '';
+
+            const headMarkup = step >= 1 ? (
+                useCustomHead ? `
+                    <g id="hangman-head-group" class="${headAnimClass}">
+                        <defs>
+                            <clipPath id="head-circle-clip">
+                                <circle cx="165" cy="74" r="24" />
+                            </clipPath>
+                        </defs>
+                        <image
+                            id="hangman-head-img"
+                            href="${HEAD_IMAGE.trim()}"
+                            x="141"
+                            y="50"
+                            width="48"
+                            height="48"
+                            preserveAspectRatio="xMidYMid slice"
+                            clip-path="url(#head-circle-clip)"
+                        />
+                        <circle
+                            cx="165"
+                            cy="74"
+                            r="24"
+                            stroke="${step >= 6 ? '#ef4444' : '#38bdf8'}"
+                            stroke-width="3"
+                            fill="none"
+                        />
+                    </g>
+                ` : `
+                    <g id="hangman-head-group" class="${headAnimClass}">
+                        <circle cx="165" cy="74" r="22" stroke="#38bdf8" stroke-width="6" fill="#0f172a"/>
+                        ${step >= 6 ? `
+                            <path d="M156 68 L162 74 M162 68 L156 74" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
+                            <path d="M168 68 L174 74 M174 68 L168 74" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
+                            <path d="M158 84 Q165 79 172 84" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
+                        ` : `
+                            <circle cx="158" cy="71" r="2.5" fill="#38bdf8"/>
+                            <circle cx="172" cy="71" r="2.5" fill="#38bdf8"/>
+                        `}
+                    </g>
+                `
+            ) : '';
+
+            return `
+                <svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Giá treo cố định -->
+                    <line x1="30" y1="215" x2="150" y2="215" stroke="#94a3b8" stroke-width="8" stroke-linecap="round"/>
+                    <line x1="70" y1="215" x2="70" y2="25" stroke="#94a3b8" stroke-width="8" stroke-linecap="round"/>
+                    <line x1="70" y1="25" x2="165" y2="25" stroke="#94a3b8" stroke-width="8" stroke-linecap="round"/>
+                    <line x1="70" y1="60" x2="105" y2="25" stroke="#94a3b8" stroke-width="6" stroke-linecap="round"/>
+                    <line x1="165" y1="25" x2="165" y2="50" stroke="#f59e0b" stroke-width="5" stroke-linecap="round"/>
+
+                    <!-- Lần sai 2: Thân nhân vật -->
+                    ${step >= 2 ? `<line x1="165" y1="98" x2="165" y2="154" stroke="#38bdf8" stroke-width="6" stroke-linecap="round"/>` : ''}
+
+                    <!-- Lần sai 3: Tay trái -->
+                    ${step >= 3 ? `<line x1="165" y1="114" x2="136" y2="140" stroke="#38bdf8" stroke-width="6" stroke-linecap="round"/>` : ''}
+
+                    <!-- Lần sai 4: Tay phải -->
+                    ${step >= 4 ? `<line x1="165" y1="114" x2="194" y2="140" stroke="#38bdf8" stroke-width="6" stroke-linecap="round"/>` : ''}
+
+                    <!-- Lần sai 5: Chân trái -->
+                    ${step >= 5 ? `<line x1="165" y1="154" x2="140" y2="192" stroke="#ef4444" stroke-width="6" stroke-linecap="round"/>` : ''}
+
+                    <!-- Lần sai 6: Chân phải -->
+                    ${step >= 6 ? `<line x1="165" y1="154" x2="190" y2="192" stroke="#ef4444" stroke-width="6" stroke-linecap="round"/>` : ''}
+
+                    <!-- Lần sai 1 (và giữ nguyên tới lần 6): Ảnh khuôn mặt nhân vật -->
+                    ${headMarkup}
+                </svg>
+            `;
+        }
+
+        function renderCharacterStage(isNewMistake = false) {
+            const step = Math.min(gameState.mistakes, MAX_MISTAKES);
+            dom.mistakeCount.textContent = step;
+
+            let heartsHTML = '';
+            for (let i = 0; i < MAX_MISTAKES; i++) {
+                const isLost = i < step;
+                heartsHTML += `<span class="heart ${isLost ? 'lost' : ''}">❤️</span>`;
+            }
+            dom.heartsDisplay.innerHTML = heartsHTML;
+
+            const animateHead = isNewMistake && step === 1;
+            dom.stageFrame.innerHTML = renderHangmanSVG(step, animateHead);
+
+            const svgImg = dom.stageFrame.querySelector('#hangman-head-img');
+            if (svgImg) {
+                svgImg.addEventListener('error', () => {
+                    gameState.headImageError = true;
+                    dom.stageFrame.innerHTML = renderHangmanSVG(step, false);
+                }, { once: true });
+            }
+        }
+
+        function renderWordSlots(revealAllOnLose = false) {
+            dom.wordDisplay.innerHTML = '';
+            const words = gameState.secretWord.split(' ');
+
+            words.forEach(word => {
+                const wordGroup = document.createElement('div');
+                wordGroup.className = 'word-group';
+
+                for (const char of word) {
+                    const slot = document.createElement('div');
+                    slot.className = 'letter-slot';
+
+                    if (char === '-') {
+                        slot.classList.add('punctuation');
+                        slot.textContent = '-';
+                    } else if (gameState.guessedLetters.has(char)) {
+                        slot.classList.add('revealed');
+                        slot.textContent = char;
+                    } else if (revealAllOnLose) {
+                        slot.classList.add('missed-reveal');
+                        slot.textContent = char;
+                    } else {
+                        slot.textContent = '';
+                    }
+
+                    wordGroup.appendChild(slot);
+                }
+
+                dom.wordDisplay.appendChild(wordGroup);
+            });
+        }
+
+        function buildKeyboard() {
+            dom.keyboard.innerHTML = '';
+
+            KEYBOARD_ROWS.forEach(row => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'keyboard-row';
+
+                row.forEach(letter => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'key-btn';
+                    btn.textContent = letter;
+                    btn.dataset.letter = letter;
+                    btn.addEventListener('click', () => handleGuess(letter));
+                    rowDiv.appendChild(btn);
+                });
+
+                dom.keyboard.appendChild(rowDiv);
+            });
+        }
+
+        /**
+         * ============================================================================
+         * ĐẶT LẠI HIỆU ỨNG GAME OVER VỀ TRẠNG THÁI BAN ĐẦU
+         * ============================================================================
+         */
+        function resetGameOverEffects() {
+            gameState.gameOverTimers.forEach(timerId => clearTimeout(timerId));
+            gameState.gameOverTimers = [];
+            gameState.gameOverSequenceActive = false;
+
+            dom.spotlightBackdrop.classList.remove('active');
+            dom.stageFrame.classList.remove('gameover-spotlight', 'gameover-tremble', 'shake-anim');
+            dom.stageFrame.style.transform = '';
+            dom.stageFrame.style.marginTop = '';
+            dom.stageFrame.style.marginLeft = '';
+
+            const headGroup = dom.stageFrame.querySelector('#hangman-head-group');
+            if (headGroup) {
+                headGroup.classList.remove('head-detach-fall');
+            }
+        }
+
+        /**
+         * ============================================================================
+         * LOGIC ĐIỀU KHIỂN LUỒNG TRÒ CHƠI & MÀN HÌNH HƯỚNG DẪN
+         * ============================================================================
+         */
+        function prepareRound(showGuideFirst = false) {
+            resetGameOverEffects();
+
+            gameState.guessedLetters.clear();
+            gameState.mistakes = 0;
+            gameState.headImageError = false;
+            gameState.status = showGuideFirst ? 'GUIDE' : 'PLAYING';
+
+            // Ẩn hoàn toàn khu vực thiết lập và xóa giá trị trong ô nhập liệu để tránh lộ đáp án
+            dom.inputKeyword.value = '';
+            dom.inputKeyword.type = 'password';
+            dom.btnToggleSecret.textContent = 'Hiện';
+            dom.setupError.textContent = '';
+
+            dom.setupScreen.classList.add('hidden');
+            dom.resultModal.classList.add('hidden');
+            dom.gameScreen.classList.remove('hidden');
+
+            dom.displayHint.textContent = gameState.hint;
+
+            buildKeyboard();
+            renderCharacterStage(false);
+            renderWordSlots(false);
+
+            if (showGuideFirst) {
+                dom.guideModal.classList.remove('hidden', 'closing');
+            } else {
+                dom.guideModal.classList.add('hidden');
+            }
+        }
+
+        function closeGuideAndBeginPlay() {
+            if (gameState.status !== 'GUIDE') return;
+            SoundFX.click();
+
+            dom.guideModal.classList.add('closing');
+            setTimeout(() => {
+                dom.guideModal.classList.add('hidden');
+                dom.guideModal.classList.remove('closing');
+                gameState.status = 'PLAYING';
+            }, 300);
+        }
+
+        function handleGuess(letter) {
+            // Chặn hoàn toàn mọi thao tác đoán chữ khi chưa ở trạng thái PLAYING (bao gồm lúc xem hướng dẫn)
+            if (gameState.status !== 'PLAYING') return;
+            if (!/^[A-Z]$/.test(letter)) return;
+            if (gameState.guessedLetters.has(letter)) return;
+
+            gameState.guessedLetters.add(letter);
+
+            const keyBtn = dom.keyboard.querySelector(`.key-btn[data-letter="${letter}"]`);
+            const isCorrect = gameState.secretWord.includes(letter);
+
+            if (isCorrect) {
+                if (keyBtn) {
+                    keyBtn.disabled = true;
+                    keyBtn.classList.add('correct');
+                }
+                SoundFX.correct();
+                renderWordSlots(false);
+                checkWinCondition();
+            } else {
+                if (keyBtn) {
+                    keyBtn.disabled = true;
+                    keyBtn.classList.add('wrong');
+                }
+                gameState.mistakes++;
+                SoundFX.wrong();
+
+                // Hiệu ứng rung nhẹ khung nhân vật khi đoán sai
+                dom.stageFrame.classList.remove('shake-anim');
+                void dom.stageFrame.offsetWidth;
+                dom.stageFrame.classList.add('shake-anim');
+
+                renderCharacterStage(true);
+                checkLoseCondition();
+            }
+        }
+
+        function checkWinCondition() {
+            const allLetters = gameState.secretWord.replace(/[^A-Z]/g, '').split('');
+            const isWon = allLetters.every(char => gameState.guessedLetters.has(char));
+
+            if (isWon) {
+                gameState.status = 'WON';
+                SoundFX.win();
+                showEndModal(true);
+            }
+        }
+
+        function checkLoseCondition() {
+            if (gameState.mistakes >= MAX_MISTAKES && !gameState.gameOverSequenceActive) {
+                gameState.status = 'LOST';
+                gameState.gameOverSequenceActive = true;
+
+                // Khóa toàn bộ bàn phím ảo ngay lập tức
+                dom.keyboard.querySelectorAll('.key-btn').forEach(btn => {
+                    btn.disabled = true;
+                });
+
+                SoundFX.lose();
+                renderWordSlots(true);
+                runGameOverSequence();
+            }
+        }
+
+        // Chuỗi hoạt ảnh Game Over diễn ra tuần tự 3 giai đoạn
+        function runGameOverSequence() {
+            // GIAI ĐOẠN 1: Phóng to nhân vật vào tâm điểm màn hình + rung nhẹ hồi hộp
+            const t1 = setTimeout(() => {
+                dom.stageFrame.classList.remove('shake-anim');
+                const rect = dom.stageFrame.getBoundingClientRect();
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 2;
+                const currentCenterX = rect.left + rect.width / 2;
+                const currentCenterY = rect.top + rect.height / 2;
+
+                const deltaX = centerX - currentCenterX;
+                const deltaY = centerY - currentCenterY;
+                const targetSize = Math.min(window.innerWidth * 0.72, window.innerHeight * 0.56, 440);
+                const scale = Math.max(1.25, targetSize / rect.width);
+
+                dom.spotlightBackdrop.classList.add('active');
+                dom.stageFrame.classList.add('gameover-spotlight', 'gameover-tremble');
+                dom.stageFrame.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scale})`;
+            }, 250);
+
+            // GIAI ĐOẠN 2: Dừng rung, đầu nhân vật tách ra và rơi theo đường cong + xoay nhẹ
+            const t2 = setTimeout(() => {
+                dom.stageFrame.classList.remove('gameover-tremble');
+                const headGroup = dom.stageFrame.querySelector('#hangman-head-group');
+                if (headGroup) {
+                    headGroup.classList.remove('head-pop-anim');
+                    void headGroup.offsetWidth;
+                    headGroup.classList.add('head-detach-fall');
+                    SoundFX.headDrop();
+                }
+            }, 1250);
+
+            // GIAI ĐOẠN 3: Chuyển cảnh mượt mà sang bảng thông báo GAME OVER!
+            const t3 = setTimeout(() => {
+                dom.spotlightBackdrop.classList.remove('active');
+                showEndModal(false);
+            }, 2600);
+
+            gameState.gameOverTimers.push(t1, t2, t3);
+        }
+
+        function showEndModal(isWin) {
+            dom.modalIcon.textContent = isWin ? '🏆' : '💥';
+            dom.modalTitle.textContent = isWin ? 'CHIẾN THẮNG!' : 'GAME OVER!';
+            dom.modalTitle.className = `modal-title ${isWin ? 'win' : 'lose'}`;
+            dom.modalDesc.textContent = isWin
+                ? `Tuyệt vời! Bạn đã giải mã từ khóa với ${gameState.mistakes}/${MAX_MISTAKES} lượt sai.`
+                : 'Bạn đã hết 6 lượt đoán! Hãy xem đáp án bên dưới và thử sức lại nhé.';
+            dom.modalAnswer.textContent = gameState.secretWord;
+
+            dom.resultModal.classList.remove('hidden');
+        }
+
+        function returnToSetupScreen() {
+            SoundFX.click();
+            resetGameOverEffects();
+
+            gameState.secretWord = '';
+            gameState.hint = '';
+            gameState.guessedLetters.clear();
+            gameState.mistakes = 0;
+            gameState.status = 'SETUP';
+
+            dom.inputKeyword.value = '';
+            dom.inputHint.value = '';
+            dom.setupError.textContent = '';
+
+            dom.guideModal.classList.add('hidden');
+            dom.resultModal.classList.add('hidden');
+            dom.gameScreen.classList.add('hidden');
+            dom.setupScreen.classList.remove('hidden');
+            dom.inputKeyword.focus();
+        }
+
+        /**
+         * ============================================================================
+         * ĐĂNG KÝ CÁC SỰ KIỆN TƯƠNG TÁC
+         * ============================================================================
+         */
+        dom.btnToggleSecret.addEventListener('click', () => {
+            const isHidden = dom.inputKeyword.type === 'password';
+            dom.inputKeyword.type = isHidden ? 'text' : 'password';
+            dom.btnToggleSecret.textContent = isHidden ? 'Ẩn' : 'Hiện';
+        });
+
+        // Khi nhấn BẮT ĐẦU TRÒ CHƠI: Lưu từ khóa chuẩn hóa và mở hộp thoại hướng dẫn cách chơi
+        dom.setupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const normalizedWord = normalizeKeyword(dom.inputKeyword.value);
+            const cleanHint = dom.inputHint.value.trim();
+
+            if (!normalizedWord || !/[A-Z]/.test(normalizedWord)) {
+                dom.setupError.textContent = 'Vui lòng nhập từ khóa chứa ít nhất một chữ cái (A-Z)!';
+                dom.inputKeyword.focus();
+                return;
+            }
+
+            if (!cleanHint) {
+                dom.setupError.textContent = 'Vui lòng nhập gợi ý cho người chơi!';
+                dom.inputHint.focus();
+                return;
+            }
+
+            gameState.secretWord = normalizedWord;
+            gameState.hint = cleanHint;
+            SoundFX.click();
+            prepareRound(true);
+        });
+
+        // Nút LET'S PLAY! / BẮT ĐẦU trong màn hình hướng dẫn
+        dom.btnStartPlay.addEventListener('click', closeGuideAndBeginPlay);
+
+        // Bàn phím vật lý A-Z (chỉ nhận phím khi trạng thái là PLAYING)
+        window.addEventListener('keydown', (e) => {
+            if (gameState.status !== 'PLAYING') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+            const pressedKey = e.key.toUpperCase();
+            if (/^[A-Z]$/.test(pressedKey)) {
+                e.preventDefault();
+                handleGuess(pressedKey);
+            }
+        });
+
+        // Chơi lại từ hiện tại
+        dom.btnReplayInline.addEventListener('click', () => {
+            SoundFX.click();
+            prepareRound(false);
+        });
+        dom.btnModalReplay.addEventListener('click', () => {
+            SoundFX.click();
+            prepareRound(false);
+        });
+
+        // Nhập từ khóa mới
+        dom.btnNewWordInline.addEventListener('click', returnToSetupScreen);
+        dom.btnModalNewWord.addEventListener('click', returnToSetupScreen);
+
+        // Bật / Tắt âm thanh
+        dom.btnSound.addEventListener('click', () => {
+            gameState.soundEnabled = !gameState.soundEnabled;
+            dom.soundIcon.textContent = gameState.soundEnabled ? '🔊' : '🔇';
+            dom.soundLabel.textContent = gameState.soundEnabled ? 'Âm thanh: Bật' : 'Âm thanh: Tắt';
+            if (gameState.soundEnabled) SoundFX.click();
+        });
+
+        // Toàn màn hình
+        dom.btnFullscreen.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(() => {});
+                }
+            }
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+            dom.fullscreenLabel.textContent = document.fullscreenElement
+                ? 'Thoát toàn màn hình'
+                : 'Toàn màn hình';
+        });
+    </script>
+</body>
+</html>
